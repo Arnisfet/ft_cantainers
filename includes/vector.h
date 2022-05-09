@@ -42,14 +42,56 @@ namespace ft {
 				explicit Vector(const Allocator &alloc = Allocator()) :
 				_p(NULL), _size(0), _capacity(0), _alloc(alloc)
 				{}
+
 				explicit Vector( size_type count,
 								 const T& value = T(),
 								 const Allocator& alloc = Allocator())
 								 : _size(count), _capacity(count), _alloc(alloc)
 								 {
 					_p = _alloc.allocate(count);
-					size_type i = 0;
-								 }
-			};
+					size_type i;
+					try
+					{
+						for (; i < _size; i++)
+							_alloc.construct(_p + i, _size);
+					}
+						catch (std::exception &e)
+						{
+							std::cout << e.what() << std::endl;
+							for (; i != 0; i--)
+								_alloc.destroy(_p + i - 1);
+							_alloc.deallocate(_p, _size);
+						}
+					}
+
+					Vector (Vector const &other)
+					{
+						_size = other.size();
+						size_type i;
+						try
+						{
+							for (; i < _size; i++)
+								_alloc.construct(_p + i, _size);
+						}
+						catch (std::exception &e)
+						{
+							std::cout << e.what() << std::endl;
+							for (; i != 0; i--)
+								_alloc.destroy(_p + i - 1);
+							_alloc.deallocate(_p, _size);
+						}
+					}
+
+					~Vector()
+					{
+					for (; this->_size != 0; this->_size--)
+							_alloc.destroy(_p + _size -1);
+					_alloc.deallocate(_p, _size);
+					}
+
+					/* Гетеры */
+
+					size_type size() const {return(_size);}
+								 };
 }
 #endif //FT_CANTAINERS_VECTOR_H
