@@ -73,19 +73,21 @@ namespace ft {
 
 					template < typename InputIt >
 					Vector(InputIt first, InputIt last, const allocator_type & alloc = allocator_type(),
-						   typename enable_if<!std::numeric_limits<InputIt
-						   >::is_specialized>::type * = 0)
+							typename ft::enable_if<!ft::is_integral<InputIt
+							>::value, InputIt>::type = InputIt())
 						   : _size(0),  _capacity(20), _alloc(alloc)
-						   {
-					if (first > last)
-						throw std::length_error("vector");
-					try {
-						_p = _alloc.allocate(_capacity);
+					{
+						size_type diff = last - first;
+						_p = _alloc.allocate(diff);
+						for (size_t i = 0; i != diff; i++)
+						{
+							_alloc.construct(_p + i, *first);
+							first++;
+						}
+						_size = diff;
+						_capacity = diff;
+						_alloc = alloc;
 					}
-					catch (...) {
-						throw "vector: couldn't allocate memory";
-					}
-						   }
 
 					~Vector()
 					{
@@ -121,8 +123,5 @@ namespace ft {
 						}
 					}
 								 };
-
-
-
 }
 #endif //FT_CANTAINERS_VECTOR_H
