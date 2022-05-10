@@ -3,9 +3,7 @@ OBJS			= $(SRCS:.cpp=.o)
 
 CXX				= c++
 
-CXXFLAGS		=  -I includes/vector.h -std=c++98 -g
-
-
+CXXFLAGS		=  -I includes/ -std=c++98 -g
 
 NAME			= test
 

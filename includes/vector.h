@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <memory>
+#include "ft_type_traits.h"
+#include <limits>
 
 namespace ft {
 	template < class T, class Allocator = std::allocator<T> >
@@ -48,20 +50,7 @@ namespace ft {
 								 const Allocator& alloc = Allocator())
 								 : _size(count), _capacity(count), _alloc(alloc)
 								 {
-					_p = _alloc.allocate(count);
-					size_type i;
-					try
-					{
-						for (; i < _size; i++)
-							_alloc.construct(_p + i, _size);
-					}
-						catch (std::exception &e)
-						{
-							std::cout << e.what() << std::endl;
-							for (; i != 0; i--)
-								_alloc.destroy(_p + i - 1);
-							_alloc.deallocate(_p, _size);
-						}
+						allocate_destruct();
 					}
 
 					Vector (Vector const &other)
@@ -82,6 +71,22 @@ namespace ft {
 						}
 					}
 
+					template < typename InputIt >
+					Vector(InputIt first, InputIt last, const allocator_type & alloc = allocator_type(),
+						   typename enable_if<!std::numeric_limits<InputIt
+						   >::is_specialized>::type * = 0)
+						   : _size(0),  _capacity(20), _alloc(alloc)
+						   {
+					if (first > last)
+						throw std::length_error("vector");
+					try {
+						_p = _alloc.allocate(_capacity);
+					}
+					catch (...) {
+						throw "vector: couldn't allocate memory";
+					}
+						   }
+
 					~Vector()
 					{
 					for (; this->_size != 0; this->_size--)
@@ -92,6 +97,32 @@ namespace ft {
 					/* Гетеры */
 
 					size_type size() const {return(_size);}
+					size_type capacity() const {return(_capacity);}
+					pointer	point() const {return(_p);}
+					allocator_type alloc() const {return(_alloc);}
+
+					/* Функции аллокации и конструкции */
+
+					void	allocate_destruct()
+					{
+						_p = _alloc.allocate(_size);
+						size_type i = 0;
+						try
+						{
+							for (; i < _size; i++)
+								_alloc.construct(_p + i, _size);
+						}
+						catch (...)
+						{
+							for (; i != 0; i--)
+								_alloc.destroy(_p + i - 1);
+							_alloc.deallocate(_p, _size);
+							throw "vector";
+						}
+					}
 								 };
+
+
+
 }
 #endif //FT_CANTAINERS_VECTOR_H
