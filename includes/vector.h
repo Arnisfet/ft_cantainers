@@ -27,8 +27,8 @@ namespace ft {
 				typedef	typename Allocator::const_pointer		const_pointer;
 				typedef  random_access_iterator<pointer>		iterator;
 				typedef  random_access_iterator<const_pointer>	const_iterator;
-				//typedef reverse_iterator<iterator> reverse_iterator;
-				//typedef reverse_iterator<const_iterator>  const_reverse_iterator;
+				typedef ReverseIterator<pointer>				reverse_iterator;
+				typedef ReverseIterator<const_pointer>	const_reverse_iterator;
 
 				/* Приватные переменные */
 
@@ -115,12 +115,50 @@ namespace ft {
 						}
 						catch (...)
 						{
-							for (; i != 0; i--)
-								_alloc.destroy(_p + i - 1);
-							_alloc.deallocate(_p, _size);
+							clear();
 							throw "vector";
 						}
 					}
-								 };
+
+					void	clear()
+					{
+						for (size_type i = 0; i < _size; i++)
+							_alloc.destroy(_p + i);
+						_alloc.deallocate(_p, _size);
+						_size = 0;
+					}
+
+					/* Оператор = */
+
+					Vector	&operator=(Vector const &other)
+					{
+						if (this != &other)
+						{
+							clear();
+							_alloc.deallocate(_p, _size);
+							_size = other._size;
+							_capacity = other._capacity;
+							_alloc = other._alloc;
+							if (_capacity)
+								_p = _alloc.allocate(_capacity);
+							for (size_type i = 0; i < _size; i++)
+								_alloc.construct(_p + i, other._p[i]);
+						}
+						return (*this);
+					}
+
+					/* ****************** End of constructors ******************* */
+					/* ****************** Iterators functions ******************* */
+					iterator				begin() {return(iterator(_p));}
+					const_iterator			cbegin() const {return(const_iterator(_p));}
+					iterator				end() {return(iterator(_p + _size));}
+					const_iterator			cend() const {return(iterator(_p + _size));}
+					reverse_iterator		rbegin() {return(reverse_iterator(end()));}
+					const_reverse_iterator	rcbegin() const {return(const_reverse_iterator(end()));}
+					reverse_iterator		rend() {return(reverse_iterator(begin()));}
+					const_reverse_iterator	rcend() const {return(const_reverse_iterator(begin()));}
+					/* ****************** Iterators ends	 ******************* */
+
+			};
 }
 #endif //FT_CANTAINERS_VECTOR_H
