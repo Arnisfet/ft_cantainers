@@ -63,35 +63,160 @@ namespace ft {
 	template<class Iterator>
 	class random_access_iterator{
 	public:
+
 		/* Элементы общего доступа*/
+
 		typedef Iterator											value_type;
 		typedef std::random_access_iterator_tag				iterator_category;
 		typedef Iterator*											pointer;
 		typedef Iterator&											reference;
 		typedef ptrdiff_t									difference_type;
+
 		/* Элементы вип доступа */
+
 	private:
 		pointer _it;
+
 		/* Конструкторы и деструкторы */
 	public:
 		random_access_iterator() : _it(NULL) {}
 		explicit random_access_iterator(value_type *it) : _it(it) {}
 		random_access_iterator(random_access_iterator const &other)
 		{*this = other;}
+
 		random_access_iterator &operator=(random_access_iterator const &other)
 			{
 				_it = other._it;
 				return (*this);
 			}
+
 		~random_access_iterator() {}
 		reference operator*() const { return (*_it);}
 		pointer operator->() const {return &(operator*());}
 		reference operator[] (difference_type n) const { return (_it[n]);}
 		pointer base() const{return (_it);}
 
+		/* Булевые операторы */
+
+		bool operator==(random_access_iterator<Iterator> &src)
+		{
+			return (_it == src._it);
+		}
+
+		bool operator!=(random_access_iterator<Iterator> &src)
+		{
+			return (_it != src._it);
+		}
+
+		/*Операторы инкремента, декремента итп*/
+
+		random_access_iterator &operator++()
+		{
+			_it++;
+			return(*this);
+		}
+
+		random_access_iterator operator++(int)
+		{
+			random_access_iterator tmp = *this;
+			++(*this);
+			return(tmp);
+		}
+
+		random_access_iterator &operator--()
+		{
+			_it--;
+			return(*this);
+		}
+
+		random_access_iterator operator--(int)
+		{
+			random_access_iterator tmp = *this;
+			--(*this);
+			return (tmp);
+		}
+
+		random_access_iterator &operator+=(difference_type n)
+		{
+			_it += n;
+			return (*this);
+		}
+
+		random_access_iterator &operator-=(difference_type n)
+		{
+			_it -= n;
+			return(*this);
+		}
+
+		random_access_iterator operator-(difference_type n)
+		{
+			return(random_access_iterator(_it - n));
+		}
+
+		random_access_iterator operator+(difference_type n)
+		{
+			return(random_access_iterator(_it + n));
+		}
 	};
 }
+/* Функции перегрузки операторов random access operator вне класса(не влияют
+ * на изначальное состояние переменных класса) */
 
+template<class Iterator>
+bool operator==(ft::random_access_iterator<Iterator> const &src,
+		ft::random_access_iterator<Iterator> const &dst)
+{
+	return(src.base() == dst.base());
+}
+
+template<class Iterator>
+bool operator!=(ft::random_access_iterator<Iterator> const &src,
+				ft::random_access_iterator<Iterator> const &dst)
+{
+	return(src.base() != dst.base());
+}
+
+template<class Iterator>
+bool operator<(ft::random_access_iterator<Iterator> const &src,
+				ft::random_access_iterator<Iterator> const &dst)
+{
+	return(src.base() < dst.base());
+}
+
+template<class Iterator>
+bool operator<=(ft::random_access_iterator<Iterator> const &src,
+			   ft::random_access_iterator<Iterator> const &dst)
+{
+	return(src.base() <= dst.base());
+}
+
+template<class Iterator>
+bool operator>(ft::random_access_iterator<Iterator> const &src,
+			   ft::random_access_iterator<Iterator> const &dst)
+{
+	return(src.base() > dst.base());
+}
+
+template<class Iterator>
+bool operator>=(ft::random_access_iterator<Iterator> const &src,
+			   ft::random_access_iterator<Iterator> const &dst)
+{
+	return(src.base() >= dst.base());
+}
+
+template<class Iterator>
+bool operator+(ft::random_access_iterator<Iterator> const &src,
+				ft::random_access_iterator<Iterator> const &dst)
+{
+	return(src.base() + dst.base());
+}
+
+template<class Iterator>
+bool operator-(ft::random_access_iterator<Iterator> const &src,
+				ft::random_access_iterator<Iterator> const &dst)
+{
+	return(src.base() - dst.base());
+}
 
 namespace ft {
 
