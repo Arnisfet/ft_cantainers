@@ -47,24 +47,6 @@ namespace ft {
 	};
 
 	template <class Iterator>
-	class VectorIterator
-	{
-	public:
-
-		typedef typename ft::iterator_traits<Iterator>::value_type 			value_type;
-		typedef typename ft::iterator_traits<Iterator>::reference 			reference;
-		typedef typename ft::iterator_traits<Iterator>::pointer				pointer;
-		typedef typename ft::iterator_traits<Iterator>::difference_type		difference_type;
-		typedef typename ft::iterator_traits<Iterator>::iterator_category	iterator_category;
-		typedef typename ft::iterator_traits<Iterator>::pointer				iterator_type;
-	private:
-		pointer _p;
-	public:
-
-	};
-
-
-	template <class Iterator>
 	class ReverseIterator
 	{
 	public:
@@ -74,6 +56,39 @@ namespace ft {
 		typedef typename iterator_traits<Iterator>::difference_type		difference_type;
 		typedef typename iterator_traits<Iterator>::pointer				pointer;
 		typedef typename iterator_traits<Iterator>::reference			reference;
+	};
+
+	/* Почти самый крутой итератор в с++, может делать все кроме минета */
+
+	template<class Iterator>
+	class random_access_iterator{
+	public:
+		/* Элементы общего доступа*/
+		typedef Iterator											value_type;
+		typedef std::random_access_iterator_tag				iterator_category;
+		typedef Iterator*											pointer;
+		typedef Iterator&											reference;
+		typedef ptrdiff_t									difference_type;
+		/* Элементы вип доступа */
+	private:
+		pointer _it;
+		/* Конструкторы и деструкторы */
+	public:
+		random_access_iterator() : _it(NULL) {}
+		explicit random_access_iterator(value_type *it) : _it(it) {}
+		random_access_iterator(random_access_iterator const &other)
+		{*this = other;}
+		random_access_iterator &operator=(random_access_iterator const &other)
+			{
+				_it = other._it;
+				return (*this);
+			}
+		~random_access_iterator() {}
+		reference operator*() const { return (*_it);}
+		pointer operator->() const {return &(operator*());}
+		reference operator[] (difference_type n) const { return (_it[n]);}
+		pointer base() const{return (_it);}
+
 	};
 }
 
