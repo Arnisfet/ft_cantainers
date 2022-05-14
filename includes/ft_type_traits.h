@@ -56,8 +56,146 @@ namespace ft {
 		typedef typename iterator_traits<Iterator>::difference_type		difference_type;
 		typedef typename iterator_traits<Iterator>::pointer				pointer;
 		typedef typename iterator_traits<Iterator>::reference			reference;
+	private:
+		pointer _it;
+	public:
+
+		/* Конструкторы и деструкторы */
+
+		ReverseIterator() : _it(NULL){}
+		ReverseIterator(pointer const &src) : _it(src){}
+		ReverseIterator(ReverseIterator const &other)
+		{*this = other;}
+		~ReverseIterator(){}
+
+		/* Гетер */
+
+		iterator_type base() {return(_it);}
+
+		/* Основные операторы получения значений */
+
+		reference operator*(){return(*_it);}
+		pointer	operator->(){return &(operator*());}
+		reference	operator[](difference_type n){return(_it[n]);}
+
+		/* Остальные операторы перегрузки */
+
+		bool	operator==(ReverseIterator<Iterator> &src)
+		{
+			return(_it == src._it);
+		}
+
+		bool	operator!=(ReverseIterator<Iterator> &src)
+		{
+			return(_it != src._it);
+		}
+
+		ReverseIterator operator++()
+		{
+			_it--;
+			return(*this);
+		}
+
+		ReverseIterator operator++(int)
+		{
+			ReverseIterator tmp;
+			tmp = *this;
+			_it--;
+			return(tmp);
+		}
+
+		ReverseIterator operator--()
+		{
+			_it++;
+			return(*this);
+		}
+
+		ReverseIterator operator--( int)
+		{
+			ReverseIterator tmp;
+			tmp = *this;
+			_it++;
+			return(tmp);
+		}
+
+		ReverseIterator &operator+=(difference_type n)
+		{
+			return(_it -= n);
+		}
+
+		ReverseIterator &operator-=(difference_type n)
+		{
+			return(_it += n);
+		}
+
+		ReverseIterator operator-(difference_type n)
+		{
+			return(random_access_iterator(_it + n));
+		}
+
+		ReverseIterator operator+(difference_type n)
+		{
+			return(random_access_iterator(_it - n));
+		}
 	};
 
+	/* Функции перегрузки операторов вне класса */
+
+	template<class Iterator>
+	bool operator==(ft::ReverseIterator<Iterator> const &src,
+					ft::ReverseIterator<Iterator> const &dst)
+	{
+		return(src.base() == dst.base());
+	}
+
+	template<class Iterator>
+	bool operator!=(ReverseIterator<Iterator> const &src,
+					ReverseIterator<Iterator> const &dst)
+	{
+		return(src.base() != dst.base());
+	}
+
+	template<class Iterator>
+	bool operator<(ft::ReverseIterator<Iterator> const &src,
+				   ft::ReverseIterator<Iterator> const &dst)
+	{
+		return(src.base() > dst.base());
+	}
+
+	template<class Iterator>
+	bool operator<=(ft::ReverseIterator<Iterator> const &src,
+					ft::ReverseIterator<Iterator> const &dst)
+	{
+		return(src.base() >= dst.base());
+	}
+
+	template<class Iterator>
+	bool operator>(ft::ReverseIterator<Iterator> const &src,
+				   ft::ReverseIterator<Iterator> const &dst)
+	{
+		return(src.base() < dst.base());
+	}
+
+	template<class Iterator>
+	bool operator>=(ft::ReverseIterator<Iterator> const &src,
+					ft::ReverseIterator<Iterator> const &dst)
+	{
+		return(src.base() <= dst.base());
+	}
+
+	template<class Iterator>
+	bool operator+(ft::ReverseIterator<Iterator> const &src,
+				   ft::ReverseIterator<Iterator> const &dst)
+	{
+		return(src.base() - dst.base());
+	}
+
+	template<class Iterator>
+	bool operator-(ft::ReverseIterator<Iterator> const &src,
+				   ft::ReverseIterator<Iterator> const &dst)
+	{
+		return (src.base() + dst.base());
+	}
 	/* Почти самый крутой итератор в с++, может делать все кроме минета */
 
 	template<class Iterator>
@@ -164,7 +302,7 @@ namespace ft {
 
 template<class Iterator>
 bool operator==(ft::random_access_iterator<Iterator> const &src,
-		ft::random_access_iterator<Iterator> const &dst)
+				ft::random_access_iterator<Iterator> const &dst)
 {
 	return(src.base() == dst.base());
 }
@@ -178,14 +316,14 @@ bool operator!=(ft::random_access_iterator<Iterator> const &src,
 
 template<class Iterator>
 bool operator<(ft::random_access_iterator<Iterator> const &src,
-				ft::random_access_iterator<Iterator> const &dst)
+			   ft::random_access_iterator<Iterator> const &dst)
 {
 	return(src.base() < dst.base());
 }
 
 template<class Iterator>
 bool operator<=(ft::random_access_iterator<Iterator> const &src,
-			   ft::random_access_iterator<Iterator> const &dst)
+				ft::random_access_iterator<Iterator> const &dst)
 {
 	return(src.base() <= dst.base());
 }
@@ -199,7 +337,7 @@ bool operator>(ft::random_access_iterator<Iterator> const &src,
 
 template<class Iterator>
 bool operator>=(ft::random_access_iterator<Iterator> const &src,
-			   ft::random_access_iterator<Iterator> const &dst)
+				ft::random_access_iterator<Iterator> const &dst)
 {
 	return(src.base() >= dst.base());
 }
