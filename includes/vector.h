@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <memory>
+#include "ft_type_traits.h"
+#include <limits>
 
 namespace ft {
 	template < class T, class Allocator = std::allocator<T> >
@@ -42,26 +44,12 @@ namespace ft {
 				explicit Vector(const Allocator &alloc = Allocator()) :
 				_p(NULL), _size(0), _capacity(0), _alloc(alloc)
 				{}
-
 				explicit Vector( size_type count,
 								 const T& value = T(),
 								 const Allocator& alloc = Allocator())
 								 : _size(count), _capacity(count), _alloc(alloc)
 								 {
-					_p = _alloc.allocate(count);
-					size_type i;
-					try
-					{
-						for (; i < _size; i++)
-							_alloc.construct(_p + i, _size);
-					}
-						catch (std::exception &e)
-						{
-							std::cout << e.what() << std::endl;
-							for (; i != 0; i--)
-								_alloc.destroy(_p + i - 1);
-							_alloc.deallocate(_p, _size);
-						}
+						allocate_destruct();
 					}
 
 					Vector (Vector const &other)
@@ -82,6 +70,24 @@ namespace ft {
 						}
 					}
 
+					template < typename InputIt >
+					Vector(InputIt first, InputIt last, const allocator_type & alloc = allocator_type(),
+							typename ft::enable_if<!ft::is_integral<InputIt
+							>::value, InputIt>::type = InputIt())
+						   : _size(0),  _capacity(20), _alloc(alloc)
+					{
+						size_type diff = last - first;
+						_p = _alloc.allocate(diff);
+						for (size_t i = 0; i != diff; i++)
+						{
+							_alloc.construct(_p + i, *first);
+							first++;
+						}
+						_size = diff;
+						_capacity = diff;
+						_alloc = alloc;
+					}
+
 					~Vector()
 					{
 					for (; this->_size != 0; this->_size--)
@@ -90,7 +96,31 @@ namespace ft {
 					}
 
 					/* Гетеры */
+
 					size_type size() const {return(_size);}
+					size_type capacity() const {return(_capacity);}
+					pointer	point() const {return(_p);}
+					allocator_type alloc() const {return(_alloc);}
+
+					/* Функции аллокации и конструкции */
+
+					void	allocate_destruct()
+					{
+						_p = _alloc.allocate(_size);
+						size_type i = 0;
+						try
+						{
+							for (; i < _size; i++)
+								_alloc.construct(_p + i, _size);
+						}
+						catch (...)
+						{
+							for (; i != 0; i--)
+								_alloc.destroy(_p + i - 1);
+							_alloc.deallocate(_p, _size);
+							throw "vector";
+						}
+					}
 								 };
 }
 #endif //FT_CANTAINERS_VECTOR_H

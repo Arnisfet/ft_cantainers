@@ -1,5 +1,6 @@
 #include "includes/vector.h"
 #include <vector>
+#include "includes/ft_type_traits.h"
 
 int main()
 {
