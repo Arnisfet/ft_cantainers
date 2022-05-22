@@ -9,6 +9,7 @@
 #include <memory>
 #include "ft_type_traits.hpp"
 #include <limits>
+#include "compare_equal.h"
 
 namespace ft {
 	template < class T, class Allocator = std::allocator<T> >
@@ -90,9 +91,10 @@ namespace ft {
 
 					~Vector()
 					{
-					for (; this->_size != 0; this->_size--)
-							_alloc.destroy(_p + _size -1);
-					_alloc.deallocate(_p, _size);
+					for(size_type i = 0; i < _size; i++)
+						_alloc.destroy(_p + i);
+					if (_capacity)
+						_alloc.deallocate(_p, _capacity);
 					}
 
 					/* Гетеры */
