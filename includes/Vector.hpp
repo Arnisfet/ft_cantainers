@@ -72,12 +72,11 @@ namespace ft {
 					}
 
 					template < typename InputIt >
-					Vector(InputIt first, InputIt last, const allocator_type & alloc = allocator_type(),
-							typename ft::enable_if<!ft::is_integral<InputIt
-							>::value, InputIt>::type = InputIt())
+					Vector(InputIt first, InputIt last,
+						   const allocator_type& alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type = InputIt())
 						   : _size(0),  _capacity(20), _alloc(alloc)
 					{
-						size_type diff = last - first;
+					size_type diff = last - first;
 						_p = _alloc.allocate(diff);
 						for (size_t i = 0; i != diff; i++)
 						{
