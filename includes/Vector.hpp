@@ -76,7 +76,9 @@ namespace ft {
 						   const allocator_type& alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type = InputIt())
 						   : _size(0),  _capacity(20), _alloc(alloc)
 					{
-					size_type diff = last - first;
+						difference_type diff = 0;
+						for (InputIt start = first; start != last; start++)
+							diff++;
 						_p = _alloc.allocate(diff);
 						for (size_t i = 0; i != diff; i++)
 						{
@@ -92,6 +94,7 @@ namespace ft {
 					{
 					for(size_type i = 0; i < _size; i++)
 						_alloc.destroy(_p + i);
+					_size = 0;
 					if (_capacity)
 						_alloc.deallocate(_p, _capacity);
 					}
@@ -134,7 +137,6 @@ namespace ft {
 						if (this != &other)
 						{
 							clear();
-							_alloc.deallocate(_p, _size);
 							_size = other._size;
 							_capacity = other._capacity;
 							_alloc = other._alloc;
@@ -259,7 +261,7 @@ namespace ft {
 					{
 						if (_capacity == 0)
 							reserve(1);
-						else if (_size + 1 > _capacity)
+						else if (_size == _capacity)
 							reserve(_capacity * 2);
 						_alloc.construct(_p + _size, val);
 						_size++;
