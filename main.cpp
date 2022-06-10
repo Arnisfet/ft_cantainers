@@ -5,7 +5,16 @@
 int main()
 {
 	ft::Vector<int> v;
-	ft::Vector<int> tmp0(5, 100);
-	tmp0.push_back(200);
-
+	ft::Vector<int> tmp0(v);
+	ft::Vector<int> z(4);
+	z.push_back(7);
+	ft::Vector<int> tmp(1000, 4), tmp2(1000, 5);
+	tmp = tmp2;
+	ft::Vector<int> tmp3(tmp);
+	ft::Vector<int> tmp4(tmp.begin(), tmp.end());
+	v.push_back(tmp4.size());
+	v.push_back(tmp4.capacity());
+	v.push_back(tmp[2]);
+	v.push_back(tmp3[2]);
+	v.push_back(tmp4[2]);
 }
