@@ -26,10 +26,12 @@ namespace ft {
 				typedef const value_type&						const_reference;
 				typedef	typename Allocator::pointer				pointer;
 				typedef	typename Allocator::const_pointer		const_pointer;
-				typedef  random_access_iterator<pointer>		iterator;
+				typedef  random_access_iterator<value_type>		iterator;
 				typedef  random_access_iterator<const_pointer>	const_iterator;
-				typedef ReverseIterator<pointer>				reverse_iterator;
-				typedef ReverseIterator<const_pointer>	const_reverse_iterator;
+//				typedef ReverseIterator<pointer>				reverse_iterator;
+//				typedef ReverseIterator<const_pointer>	const_reverse_iterator;
+				typedef class ReverseIterator<iterator>		reverse_iterator;
+				typedef class ReverseIterator<const_iterator>	const_reverse_iterator;
 
 				/* Приватные переменные */
 
@@ -50,17 +52,29 @@ namespace ft {
 								 const Allocator& alloc = Allocator())
 								 : _size(count), _capacity(count), _alloc(alloc)
 								 {
-						allocate_destruct();
+									 _p = _alloc.allocate(_size);
+									 size_type i = 0;
+									 try
+									 {
+										 for (; i < _size; i++)
+											 _alloc.construct(_p + i, value);
+									 }
+									 catch (...)
+									 {
+										 clear();
+										 throw "vector";
+									 }
 					}
 
-					Vector (Vector const &other)
+					Vector (Vector const &other) : _p(NULL), _alloc(allocator_type())
 					{
 						_size = other.size();
-						size_type i;
+						size_type i = 0;
 						try
 						{
+							_p = _alloc.allocate(_size);
 							for (; i < _size; i++)
-								_alloc.construct(_p + i, _size);
+								_alloc.construct(_p + i, other[i]);
 						}
 						catch (std::exception &e)
 						{
@@ -106,22 +120,6 @@ namespace ft {
 
 					/* Функции аллокации и конструкции */
 
-					void	allocate_destruct()
-					{
-						_p = _alloc.allocate(_size);
-						size_type i = 0;
-						try
-						{
-							for (; i < _size; i++)
-								_alloc.construct(_p + i, _size);
-						}
-						catch (...)
-						{
-							clear();
-							throw "vector";
-						}
-					}
-
 					void	clear()
 					{
 						for (size_type i = 0; i < _size; i++)
@@ -166,28 +164,21 @@ namespace ft {
 					size_type max_size() const {return (_alloc.max_size());}
 					//Resizes the container so that it contains n elements
 					//If the requested size is bigger than the current capacity, the capacity is usually doubled until it's large enough
+
 					void resize (size_type n, value_type val = value_type())
 					{
-						// if the n smaller than size just reduct the size and destroy
-						if (n < _size)
-						{
-							while (_size > n)
-							{
-								_alloc.destroy(_p + _size);
-								_size--;
+						if (n < _size) {
+							for (size_type i = _size; i != n; i--) {
+								pop_back();
 							}
 						}
-						// if n is greater from size so lets increase our size and insert new elements
-						if (n > _size)
-						{
-							reserve(n);
-							for(size_type i = _size; i < n; i++)
-							{
-								_alloc.construct(_p + i, val);
-								_size++;
+						else {
+							for (size_type i = _size; i != n; i++) {
+								push_back(val);
 							}
 						}
 					}
+
 					bool empty() const {return (size() == 0 ? true : false); }
 					void reserve (size_type n)
 					{
@@ -198,6 +189,7 @@ namespace ft {
 							Increase the capacity of the vector to a value that's greater or equal to n.
 							If n is greater than the current capacity(), new storage is allocated, otherwise the function does nothing.
 						*/
+//						std::cout << _capacity << "\n";
 						if (n > _capacity)
 						{
 							// allocate the new_size
@@ -205,11 +197,17 @@ namespace ft {
 							// copy the old ptr into new_ptr
 							for (size_type i = 0; i < _size; i++)
 								_alloc.construct(new_ptr + i, _p[i]);
+							for (size_type i = 0; i < _size; i++)
+								_alloc.destroy(_p + i);
 							if (_capacity)
 								_alloc.deallocate(_p, _capacity);
 							// swap the contenu
 							std::swap(new_ptr, _p);
+//							std::cout << _capacity << "\n";
+//							printf("%lu\n", _capacity);
 							_capacity = n;
+//							std::cout << _capacity << "\n";
+//							printf("%lu\n", _capacity);
 						}
 					}
 				/************************** End Capacity  ****************************/
@@ -243,19 +241,44 @@ namespace ft {
 					template <class InputIterator>
 					void assign (InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type = InputIterator())
 					{
-						size_type diff = last - first;
-						clear();
-						reserve(diff);
-						while (first != last)
-							push_back(*first++);
+						{
+							size_type	counter = 0;
+//							if (last < first) {
+//								throw std::invalid_argument("vector error: assign");
+//							}
+							for (InputIterator it = first; it != last; it++) {
+								counter++;
+							}
+							for (size_type i = 0; i < _size; i++) {
+								_alloc.destroy(_p + i);
+							}
+							if (_capacity < counter) {
+								_alloc.deallocate(_p, _capacity);
+								_capacity = counter;
+								_p = _alloc.allocate(_capacity);
+							}
+							_size = counter;
+							for (size_type i = 0; first != last; i++, first++) {
+								_alloc.construct(_p + i, *first);
+							}
+						}
 					}
 					void assign (size_type n, const value_type& val)
 					{
-						// n is the new size
-						_size = 0;
-						reserve(n);
-						for (size_type i = 0; i < n; i++)
-							push_back(val);
+						if (!_capacity)
+							_p = _alloc.allocate(n);
+						for (size_type i = 0; i < _size; i++) {
+							_alloc.destroy(_p + i);
+						}
+						if (_capacity < n) {
+							_alloc.deallocate(_p, _capacity);
+							_capacity = n;
+							_p = _alloc.allocate(_capacity);
+						}
+						for (size_type i = 0; i < n; i++) {
+							_alloc.construct(_p + i, val);
+						}
+						_size = n;
 					}
 					void push_back (const value_type& val)
 					{
@@ -398,7 +421,7 @@ namespace ft {
 			}
 			//The less-than comparison (operator<) behaves as if using algorithm lexicographical_compare
 			template <class T, class Alloc>
-					bool operator<  (const Vector<T,Alloc>& lhs, const Vector<T,Alloc>& rhs)
+					bool operator<  (const ft::Vector<T,Alloc>& lhs, const ft::Vector<T,Alloc>& rhs)
 			{
 				return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 			}
@@ -409,7 +432,7 @@ namespace ft {
 				//	!(b<a)
 				return !(rhs < lhs);
 			}
-			template <class T, class Alloc>bool operator>  (const Vector<T,Alloc>& lhs, const Vector<T,Alloc>& rhs)
+			template <class T, class Alloc>bool operator>  (const ft::Vector<T,Alloc>& lhs, const ft::Vector<T,Alloc>& rhs)
 					{
 					//b<a
 					return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
@@ -420,5 +443,7 @@ namespace ft {
 						//!(a<b)
 						return !(lhs < rhs);
 					}
+
+
 }
 #endif //FT_CANTAINERS_VECTOR_H

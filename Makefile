@@ -1,4 +1,4 @@
-SRCS			=   main.cpp
+SRCS			=   ft_containers-unit-test/sources/vector_tests/rbegin.cpp
 OBJS			= $(SRCS:.cpp=.o)
 
 CXX				= c++
