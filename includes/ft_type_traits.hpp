@@ -41,16 +41,126 @@ namespace ft {
 		typedef std::random_access_iterator_tag	iterator_category;
 	};
 
+
+
+
+    /* Почти самый крутой итератор в с++, может делать все кроме минета */
+
+    template<class Iterator>
+    class random_access_iterator{
+    public:
+
+        /* Элементы общего доступа*/
+
+        typedef typename ft::iterator_traits<Iterator*>::value_type 			value_type;
+        typedef typename ft::iterator_traits<Iterator*>::reference 			reference;
+        typedef typename ft::iterator_traits<Iterator*>::pointer				pointer;
+        typedef typename ft::iterator_traits<Iterator*>::difference_type		difference_type;
+        typedef typename ft::iterator_traits<Iterator*>::iterator_category	iterator_category;
+        typedef typename ft::iterator_traits<Iterator*>::pointer				iterator_type;
+
+        /* Элементы вип доступа */
+
+        pointer _it;
+    private:
+
+        /* Конструкторы и деструкторы */
+    public:
+        random_access_iterator() : _it(NULL) {}
+        explicit random_access_iterator(value_type *it) : _it(it) {}
+        random_access_iterator(random_access_iterator const &other)
+        {*this = other;}
+
+        random_access_iterator &operator=(random_access_iterator const &other)
+        {
+            _it = other._it;
+            return (*this);
+        }
+
+        ~random_access_iterator() {}
+        reference operator*() const { return (*_it);}
+        pointer operator->() const {return &(operator*());}
+        reference operator[] (difference_type n) const { return (_it[n]);}
+        pointer base() const{return (_it);}
+
+        /* Булевые операторы */
+
+        bool operator==(random_access_iterator<Iterator> &src)
+        {
+            return (_it == src._it);
+        }
+
+        bool operator!=(random_access_iterator<Iterator> &src)
+        {
+            return (_it != src._it);
+        }
+
+        /*Операторы инкремента, декремента итп*/
+
+        random_access_iterator &operator++()
+        {
+            _it++;
+            return(*this);
+        }
+
+        random_access_iterator operator++(int)
+        {
+            random_access_iterator tmp = *this;
+            ++(*this);
+            return(tmp);
+        }
+
+        random_access_iterator &operator--()
+        {
+            _it--;
+            return(*this);
+        }
+
+        random_access_iterator operator--(int)
+        {
+            random_access_iterator tmp = *this;
+            --(*this);
+            return (tmp);
+        }
+
+        random_access_iterator &operator+=(difference_type n)
+        {
+            _it += n;
+            return (*this);
+        }
+
+        random_access_iterator &operator-=(difference_type n)
+        {
+            _it -= n;
+            return(*this);
+        }
+
+        random_access_iterator operator-(difference_type n) const
+        {
+            return(random_access_iterator(_it - n));
+        }
+
+        random_access_iterator operator+(difference_type n)
+        {
+            return(random_access_iterator(_it + n));
+        }
+        operator random_access_iterator<const Iterator>() const {
+            return (random_access_iterator<const Iterator>(_it));
+        }
+
+    };
+
+
 	template <class Iterator>
 	class ReverseIterator
 	{
 	public:
 		typedef Iterator												iterator_type;
-		typedef typename iterator_traits<Iterator>::iterator_category	iterator_category;
-		typedef typename iterator_traits<Iterator>::value_type			value_type;
-		typedef typename iterator_traits<Iterator>::difference_type		difference_type;
-		typedef typename iterator_traits<Iterator>::pointer				pointer;
-		typedef typename iterator_traits<Iterator>::reference			reference;
+		typedef std::random_access_iterator_tag	iterator_category;
+		typedef  Iterator			value_type;
+		typedef  std::ptrdiff_t 		difference_type;
+		typedef  Iterator*				pointer;
+		typedef  Iterator&			reference;
 	private:
 		pointer _it;
 	public:
@@ -58,9 +168,14 @@ namespace ft {
 		/* Конструкторы и деструкторы */
 
 		ReverseIterator() : _it(NULL){}
-		explicit ReverseIterator(pointer const &src) : _it(src){}
+		explicit ReverseIterator(pointer const &src) : _it(src)
+        {
+            std::cout << "+\n";
+        }
+        explicit ReverseIterator(Iterator const &src){}
 		ReverseIterator(ReverseIterator const &other)
 		{*this = other;}
+
 		~ReverseIterator(){}
 
 		/* Гетер */
@@ -125,12 +240,12 @@ namespace ft {
 
 		ReverseIterator operator-(difference_type n)
 		{
-			return(random_access_iterator(_it + n));
+			return (ReverseIterator(_it + n));
 		}
 
 		ReverseIterator operator+(difference_type n)
 		{
-			return(random_access_iterator(_it - n));
+			return(ReverseIterator(_it - n));
 		}
 	};
 
@@ -191,111 +306,111 @@ namespace ft {
 	{
 		return (src.base() + dst.base());
 	}
-	/* Почти самый крутой итератор в с++, может делать все кроме минета */
-
-	template<class Iterator>
-	class random_access_iterator{
-	public:
-
-		/* Элементы общего доступа*/
-
-		typedef typename ft::iterator_traits<Iterator*>::value_type 			value_type;
-		typedef typename ft::iterator_traits<Iterator*>::reference 			reference;
-		typedef typename ft::iterator_traits<Iterator*>::pointer				pointer;
-		typedef typename ft::iterator_traits<Iterator*>::difference_type		difference_type;
-		typedef typename ft::iterator_traits<Iterator*>::iterator_category	iterator_category;
-		typedef typename ft::iterator_traits<Iterator*>::pointer				iterator_type;
-
-		/* Элементы вип доступа */
-
-	private:
-		pointer _it;
-
-		/* Конструкторы и деструкторы */
-	public:
-		 random_access_iterator() : _it(NULL) {}
-		explicit random_access_iterator(value_type *it) : _it(it) {}
-		 random_access_iterator(random_access_iterator const &other)
-		{*this = other;}
-
-		random_access_iterator &operator=(random_access_iterator const &other)
-			{
-				_it = other._it;
-				return (*this);
-			}
-
-		~random_access_iterator() {}
-		reference operator*() const { return (*_it);}
-		pointer operator->() const {return &(operator*());}
-		reference operator[] (difference_type n) const { return (_it[n]);}
-		pointer base() const{return (_it);}
-
-		/* Булевые операторы */
-
-		bool operator==(random_access_iterator<Iterator> &src)
-		{
-			return (_it == src._it);
-		}
-
-		bool operator!=(random_access_iterator<Iterator> &src)
-		{
-			return (_it != src._it);
-		}
-
-		/*Операторы инкремента, декремента итп*/
-
-		random_access_iterator &operator++()
-		{
-			_it++;
-			return(*this);
-		}
-
-		random_access_iterator operator++(int)
-		{
-			random_access_iterator tmp = *this;
-			++(*this);
-			return(tmp);
-		}
-
-		random_access_iterator &operator--()
-		{
-			_it--;
-			return(*this);
-		}
-
-		random_access_iterator operator--(int)
-		{
-			random_access_iterator tmp = *this;
-			--(*this);
-			return (tmp);
-		}
-
-		random_access_iterator &operator+=(difference_type n)
-		{
-			_it += n;
-			return (*this);
-		}
-
-		random_access_iterator &operator-=(difference_type n)
-		{
-			_it -= n;
-			return(*this);
-		}
-
-		random_access_iterator operator-(difference_type n) const
-		{
-			return(random_access_iterator(_it - n));
-		}
-
-		random_access_iterator operator+(difference_type n)
-		{
-			return(random_access_iterator(_it + n));
-		}
-		operator random_access_iterator<const Iterator>() const {
-			return (random_access_iterator<const Iterator>(_it));
-		}
-
-	};
+//	/* Почти самый крутой итератор в с++, может делать все кроме минета */
+//
+//	template<class Iterator>
+//	class random_access_iterator{
+//	public:
+//
+//		/* Элементы общего доступа*/
+//
+//		typedef typename ft::iterator_traits<Iterator*>::value_type 			value_type;
+//		typedef typename ft::iterator_traits<Iterator*>::reference 			reference;
+//		typedef typename ft::iterator_traits<Iterator*>::pointer				pointer;
+//		typedef typename ft::iterator_traits<Iterator*>::difference_type		difference_type;
+//		typedef typename ft::iterator_traits<Iterator*>::iterator_category	iterator_category;
+//		typedef typename ft::iterator_traits<Iterator*>::pointer				iterator_type;
+//
+//		/* Элементы вип доступа */
+//
+//	private:
+//		pointer _it;
+//
+//		/* Конструкторы и деструкторы */
+//	public:
+//		 random_access_iterator() : _it(NULL) {}
+//		explicit random_access_iterator(value_type *it) : _it(it) {}
+//		 random_access_iterator(random_access_iterator const &other)
+//		{*this = other;}
+//
+//		random_access_iterator &operator=(random_access_iterator const &other)
+//			{
+//				_it = other._it;
+//				return (*this);
+//			}
+//
+//		~random_access_iterator() {}
+//		reference operator*() const { return (*_it);}
+//		pointer operator->() const {return &(operator*());}
+//		reference operator[] (difference_type n) const { return (_it[n]);}
+//		pointer base() const{return (_it);}
+//
+//		/* Булевые операторы */
+//
+//		bool operator==(random_access_iterator<Iterator> &src)
+//		{
+//			return (_it == src._it);
+//		}
+//
+//		bool operator!=(random_access_iterator<Iterator> &src)
+//		{
+//			return (_it != src._it);
+//		}
+//
+//		/*Операторы инкремента, декремента итп*/
+//
+//		random_access_iterator &operator++()
+//		{
+//			_it++;
+//			return(*this);
+//		}
+//
+//		random_access_iterator operator++(int)
+//		{
+//			random_access_iterator tmp = *this;
+//			++(*this);
+//			return(tmp);
+//		}
+//
+//		random_access_iterator &operator--()
+//		{
+//			_it--;
+//			return(*this);
+//		}
+//
+//		random_access_iterator operator--(int)
+//		{
+//			random_access_iterator tmp = *this;
+//			--(*this);
+//			return (tmp);
+//		}
+//
+//		random_access_iterator &operator+=(difference_type n)
+//		{
+//			_it += n;
+//			return (*this);
+//		}
+//
+//		random_access_iterator &operator-=(difference_type n)
+//		{
+//			_it -= n;
+//			return(*this);
+//		}
+//
+//		random_access_iterator operator-(difference_type n) const
+//		{
+//			return(random_access_iterator(_it - n));
+//		}
+//
+//		random_access_iterator operator+(difference_type n)
+//		{
+//			return(random_access_iterator(_it + n));
+//		}
+//		operator random_access_iterator<const Iterator>() const {
+//			return (random_access_iterator<const Iterator>(_it));
+//		}
+//
+//	};
 }
 /* Функции перегрузки операторов random access operator вне класса(не влияют
  * на изначальное состояние переменных класса) */

@@ -30,7 +30,7 @@ namespace ft {
 				typedef  random_access_iterator<const_pointer>	const_iterator;
 //				typedef ReverseIterator<pointer>				reverse_iterator;
 //				typedef ReverseIterator<const_pointer>	const_reverse_iterator;
-				typedef class ReverseIterator<iterator>		reverse_iterator;
+				typedef ReverseIterator<iterator>		reverse_iterator;
 				typedef class ReverseIterator<const_iterator>	const_reverse_iterator;
 
 				/* Приватные переменные */
@@ -149,13 +149,13 @@ namespace ft {
 					/* ****************** End of constructors ******************* */
 					/* ****************** Iterators functions ******************* */
 					iterator				begin() {return(iterator(_p));}
-					const_iterator			cbegin() const {return(const_iterator(_p));}
+					iterator			begin() const {return(iterator(_p));} //const
 					iterator				end() {return(iterator(_p + _size));}
-					const_iterator			cend() const {return(iterator(_p + _size));}
-					reverse_iterator		rbegin() {return(reverse_iterator(end()));}
-					const_reverse_iterator	rcbegin() const {return(const_reverse_iterator(end()));}
+					iterator			end() const {return(iterator(_p + _size));} //const
+					reverse_iterator		rbegin() {return(reverse_iterator(iterator(end())._it));}
+					const_reverse_iterator	rbegin() const {return(const_reverse_iterator(const_iterator(end())._it));}
 					reverse_iterator		rend() {return(reverse_iterator(begin()));}
-					const_reverse_iterator	rcend() const {return(const_reverse_iterator(begin()));}
+					const_reverse_iterator	rend() const {return(const_reverse_iterator(begin()));}
 					/* ****************** Iterators ends	 ******************* */
 					/**************************** Capacity  ******************************/
 					size_type size() const{return (_size);}
